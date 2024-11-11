@@ -6,7 +6,7 @@ Subject: [PATCH] Build Changes
 Change shadow plugin
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index 421f6b3dc8890d63d2e7aa774d0bf8f7e15890ab..ef23b818c58015cd4be77962ea257d4cb4a2a7ac 100644
+index 535b0c6a750cc77fb9340d6e080932f3eb3bde17..f7b0a09a467b8192a618e5f3c77716eb7b19c803 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -4,6 +4,7 @@ import java.time.Instant
@@ -21,48 +21,48 @@ index 421f6b3dc8890d63d2e7aa774d0bf8f7e15890ab..ef23b818c58015cd4be77962ea257d4c
  val alsoShade: Configuration by configurations.creating
  
  dependencies {
--    implementation(project(":paper-api"))
+-    implementation(project(":purpur-api")) // Pufferfish // Paper // Purpur
 +    // ASWM start
 +    implementation(project(":slimeworldmanager-api"))
 +    implementation(project(":core"))
-+    implementation("io.papermc.paper:paper-mojangapi:1.20.4-R0.1-SNAPSHOT") {
++    implementation("io.papermc.paper:paper-mojangapi:1.21.1-R0.1-SNAPSHOT") {
 +        exclude("io.papermc.paper", "paper-api")
 +    }
 +    // ASWM end
      // Paper start
      implementation("org.jline:jline-terminal-jansi:3.21.0")
      implementation("net.minecrell:terminalconsoleappender:1.3.0")
-@@ -84,14 +91,14 @@ tasks.jar {
+@@ -104,14 +111,14 @@ tasks.jar {
          val gitBranch = git("rev-parse", "--abbrev-ref", "HEAD").getText().trim() // Paper
          attributes(
              "Main-Class" to "org.bukkit.craftbukkit.Main",
--            "Implementation-Title" to "Paper",
+-            "Implementation-Title" to "Purpur", // Pufferfish // Purpur
 +            "Implementation-Title" to "AdvancedSlimePaper",
              "Implementation-Version" to implementationVersion,
              "Implementation-Vendor" to date, // Paper
--            "Specification-Title" to "Paper",
+-            "Specification-Title" to "Purpur", // Pufferfish // Purpur
 +            "Specification-Title" to "AdvancedSlimePaper",
              "Specification-Version" to project.version,
--            "Specification-Vendor" to "Paper Team",
--            "Brand-Id" to "papermc:paper",
--            "Brand-Name" to "Paper",
+-            "Specification-Vendor" to "Purpur Team", // Pufferfish // Purpur
+-            "Brand-Id" to "purpurmc:purpur", // Pufferfish // Purpur
+-            "Brand-Name" to "Purpur", // Pufferfish // Purpur
 +            "Specification-Vendor" to "InfernalSuite Team",
 +            "Brand-Id" to "infernalsuite:advancedslimepaper",
 +            "Brand-Name" to "AdvancedSlimePaper",
              "Build-Number" to (build ?: ""),
              "Build-Time" to Instant.now().toString(),
              "Git-Branch" to gitBranch, // Paper
-@@ -148,7 +155,7 @@ fun TaskContainer.registerRunTask(
+@@ -172,7 +179,7 @@ fun TaskContainer.registerRunTask(
      name: String,
      block: JavaExec.() -> Unit
  ): TaskProvider<JavaExec> = register<JavaExec>(name) {
--    group = "paper"
+-    group = "paperweight" // Purpur
 +    group = "slimeworldmanager"
      mainClass.set("org.bukkit.craftbukkit.Main")
      standardInput = System.`in`
      workingDir = rootProject.layout.projectDirectory
 diff --git a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
-index 87d2b3ec165e2e9e4bdbedd7adddaa2130ed507b..286d63e017b8bfabbbecee0c4f994d9e5fbd072b 100644
+index 5c7f2471a0b15ac2e714527296ad2aa7291999eb..11c095f7c73d15903fc275d1975e98a7f79c4bc8 100644
 --- a/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 +++ b/src/main/java/ca/spottedleaf/moonrise/patches/chunk_system/level/entity/ChunkEntitySlices.java
 @@ -40,7 +40,7 @@ public final class ChunkEntitySlices {
@@ -147,32 +147,37 @@ index 1ab93f219246d0b4dcdfd0f685f47c13091425f8..3f5fbc7a1394972e55ac5b345e81b40c
                                      final int chunkZ, final PrioritisedExecutor.Priority priority) {
              super(scheduler, world, chunkX, chunkZ, RegionFileIOThread.RegionFileType.CHUNK_DATA, priority);
 diff --git a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..55864e5f9ba2ccca0160760e90d8f77819688b8e 100644
+index 6d36fc6d8e22d9b68dea3830f6ecc8763184c343..01de62f8818ec5e55278f09d14c8027ac3072068 100644
 --- a/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
 +++ b/src/main/java/com/destroystokyo/paper/PaperVersionFetcher.java
-@@ -35,7 +35,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -35,10 +35,7 @@ public class PaperVersionFetcher implements VersionFetcher {
      private static final Logger LOGGER = LogUtils.getClassLogger();
      private static final int DISTANCE_ERROR = -1;
      private static final int DISTANCE_UNKNOWN = -2;
--    private static final String DOWNLOAD_PAGE = "https://papermc.io/downloads/paper";
+-    // Purpur start
+-    private static final String DOWNLOAD_PAGE = "https://purpurmc.org/downloads";
+-    private static int distance = DISTANCE_UNKNOWN; public int distance() { return distance; }
+-    // Purpur end
 +    private static final String DOWNLOAD_PAGE = "https://discord.gg/YevvsMa";
  
      @Override
      public long getCacheTime() {
-@@ -49,7 +49,7 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -52,7 +49,7 @@ public class PaperVersionFetcher implements VersionFetcher {
          if (build.buildNumber().isEmpty() && build.gitCommit().isEmpty()) {
              updateMessage = text("You are running a development version without access to version information", color(0xFF5300));
          } else {
--            updateMessage = getUpdateStatusMessage("PaperMC/Paper", build);
+-            updateMessage = getUpdateStatusMessage("PurpurMC/Purpur", build); // Purpur
 +            updateMessage = getUpdateStatusMessage("InfernalSuite/AdvancedSlimePaper", build);
          }
          final @Nullable Component history = this.getHistory();
  
-@@ -58,17 +58,18 @@ public class PaperVersionFetcher implements VersionFetcher {
+@@ -60,26 +57,27 @@ public class PaperVersionFetcher implements VersionFetcher {
+     }
  
      private static Component getUpdateStatusMessage(final String repo, final ServerBuildInfo build) {
-         int distance = DISTANCE_ERROR;
+-        //int distance = DISTANCE_ERROR; // Purpur - use field
 -
++        int distance = DISTANCE_ERROR;
 +        /* // AdvancedSlimePaper start
          final OptionalInt buildNumber = build.buildNumber();
          if (buildNumber.isPresent()) {
@@ -188,10 +193,14 @@ index 532306cacd52579cdf37e4aca25887b1ed3ba6a1..55864e5f9ba2ccca0160760e90d8f778
 +        //} // AdvancedSlimePaper
  
          return switch (distance) {
-             case DISTANCE_ERROR -> text("Error obtaining version information", NamedTextColor.YELLOW);
-@@ -76,7 +77,7 @@ public class PaperVersionFetcher implements VersionFetcher {
-             case DISTANCE_UNKNOWN -> text("Unknown version", NamedTextColor.YELLOW);
-             default -> text("You are " + distance + " version(s) behind", NamedTextColor.YELLOW)
+-            case DISTANCE_ERROR -> text("* Error obtaining version information", NamedTextColor.RED); // Purpur
+-            case 0 -> text("* You are running the latest version", NamedTextColor.GREEN); // Purpur
+-            case DISTANCE_UNKNOWN -> text("* Unknown version", NamedTextColor.YELLOW); // Purpur
+-            default -> text("* You are " + distance + " version(s) behind", NamedTextColor.YELLOW) // Purpur
++            case DISTANCE_ERROR -> text("Error obtaining version information", NamedTextColor.YELLOW);
++            case 0 -> text("You are running the latest version", NamedTextColor.GREEN);
++            case DISTANCE_UNKNOWN -> text("Unknown version", NamedTextColor.YELLOW);
++            default -> text("You are " + distance + " version(s) behind", NamedTextColor.YELLOW)
                  .append(Component.newline())
 -                .append(text("Download the new version at: ")
 +                .append(text("Download the new version from our Discord: ")
@@ -2040,40 +2049,40 @@ index 0000000000000000000000000000000000000000..3500005bb09dc484bc333f1e0799613d
 +}
 \ No newline at end of file
 diff --git a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
-index 790bad0494454ca12ee152e3de6da3da634d9b20..2d6b062c4a3cf682d8e4cdbb7b7c84a7699285f2 100644
+index 3099c21ee589acf6edff5903a23673adf489024f..5db6a2bd6a3d15f8afd88b14bd62155b6d094b0f 100644
 --- a/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
 +++ b/src/main/java/io/papermc/paper/ServerBuildInfoImpl.java
-@@ -31,6 +31,7 @@ public record ServerBuildInfoImpl(
-     private static final String ATTRIBUTE_GIT_COMMIT = "Git-Commit";
- 
+@@ -33,6 +33,7 @@ public record ServerBuildInfoImpl(
      private static final String BRAND_PAPER_NAME = "Paper";
+     private static final String BRAND_PUFFERFISH_NAME = "Pufferfish"; // Purpur
+     private static final String BRAND_PURPUR_NAME = "Purpur"; // Purpur
 +    private static final String BRAND_ADVANCED_SLIME_PAPER_NAME = "Paper";
  
      private static final String BUILD_DEV = "DEV";
  
-@@ -42,9 +43,9 @@ public record ServerBuildInfoImpl(
+@@ -44,9 +45,9 @@ public record ServerBuildInfoImpl(
          this(
              getManifestAttribute(manifest, ATTRIBUTE_BRAND_ID)
                  .map(Key::key)
--                .orElse(BRAND_PAPER_ID),
+-                .orElse(BRAND_PURPUR_ID), // Purpur
 +                .orElse(BRAND_ADVANCED_SLIME_PAPER_ID),
              getManifestAttribute(manifest, ATTRIBUTE_BRAND_NAME)
--                .orElse(BRAND_PAPER_NAME),
+-                .orElse(BRAND_PURPUR_NAME), // Purpur
 +                .orElse(BRAND_ADVANCED_SLIME_PAPER_NAME),
              SharedConstants.getCurrentVersion().getId(),
              SharedConstants.getCurrentVersion().getName(),
              getManifestAttribute(manifest, ATTRIBUTE_BUILD_NUMBER)
-@@ -61,7 +62,7 @@ public record ServerBuildInfoImpl(
+@@ -63,7 +64,7 @@ public record ServerBuildInfoImpl(
  
      @Override
      public boolean isBrandCompatible(final @NotNull Key brandId) {
--        return brandId.equals(this.brandId);
+-        return brandId.equals(this.brandId) || brandId.equals(BRAND_PAPER_ID) || brandId.equals(BRAND_PUFFERFISH_ID); // Purpur
 +        return brandId.equals(this.brandId) || brandId.equals(BRAND_PAPER_ID) || brandId.equals(BRAND_ADVANCED_SLIME_PAPER_ID);
      }
  
      @Override
 diff --git a/src/main/java/net/minecraft/server/MinecraftServer.java b/src/main/java/net/minecraft/server/MinecraftServer.java
-index 23ddd26af762c1cd7fb3920669abb96b3213ab37..4434022a6235db9cb453596df7d2aef7bf011363 100644
+index d78cb68c3a53b277aa26186062efc716c8f80f36..5b5082a63ee685fb903ac05b95012a8fb7839ec7 100644
 --- a/src/main/java/net/minecraft/server/MinecraftServer.java
 +++ b/src/main/java/net/minecraft/server/MinecraftServer.java
 @@ -282,7 +282,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
@@ -2085,7 +2094,7 @@ index 23ddd26af762c1cd7fb3920669abb96b3213ab37..4434022a6235db9cb453596df7d2aef7
      private final CustomBossEvents customBossEvents;
      private final ServerFunctionManager functionManager;
      private boolean enforceWhitelist;
-@@ -546,51 +546,66 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -549,51 +549,66 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
              if (dimensionKey == LevelStem.NETHER) {
                  if (this.server.getAllowNether()) {
                      dimension = -1;
@@ -2165,7 +2174,7 @@ index 23ddd26af762c1cd7fb3920669abb96b3213ab37..4434022a6235db9cb453596df7d2aef7
                          MinecraftServer.LOGGER.warn("Could not create path for " + newWorld + "!");
                          MinecraftServer.LOGGER.info("---- Migration of old " + worldType + " folder failed ----");
                      }
-@@ -598,7 +613,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
+@@ -601,7 +616,7 @@ public abstract class MinecraftServer extends ReentrantBlockableEventLoop<TickTa
  
                  try {
                      worldSession = LevelStorageSource.createDefault(this.server.getWorldContainer().toPath()).validateAndCreateAccess(name, dimensionKey);
@@ -2175,12 +2184,12 @@ index 23ddd26af762c1cd7fb3920669abb96b3213ab37..4434022a6235db9cb453596df7d2aef7
                  }
              }
 diff --git a/src/main/java/net/minecraft/server/level/ServerChunkCache.java b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-index dcb5651d1d9b10b40430fb2f713beedf68336704..025a968d6081d13903396d087a582ff9033b0b7e 100644
+index ebe872c4643038f0c99b289d4d5afdbedd76c6ef..d7a1776707d4b902f231918e22a813c7875c6bf4 100644
 --- a/src/main/java/net/minecraft/server/level/ServerChunkCache.java
 +++ b/src/main/java/net/minecraft/server/level/ServerChunkCache.java
-@@ -128,7 +128,11 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
-     // Paper end - rewrite chunk system
-     private ServerChunkCache.ChunkAndHolder[] iterationCopy; // Paper - chunk tick iteration optimisations
+@@ -131,7 +131,11 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+     public boolean firstRunSpawnCounts = true; // Pufferfish
+     public final java.util.concurrent.atomic.AtomicBoolean _pufferfish_spawnCountsReady = new java.util.concurrent.atomic.AtomicBoolean(false); // Pufferfish - optimize countmobs
  
 -    public ServerChunkCache(ServerLevel world, LevelStorageSource.LevelStorageAccess session, DataFixer dataFixer, StructureTemplateManager structureTemplateManager, Executor workerExecutor, ChunkGenerator chunkGenerator, int viewDistance, int simulationDistance, boolean dsync, ChunkProgressListener worldGenerationProgressListener, ChunkStatusUpdateListener chunkStatusChangeListener, Supplier<DimensionDataStorage> persistentStateManagerFactory) {
 +    // ASWM START
@@ -2191,11 +2200,20 @@ index dcb5651d1d9b10b40430fb2f713beedf68336704..025a968d6081d13903396d087a582ff9
          this.level = world;
          this.mainThreadProcessor = new ServerChunkCache.MainThreadExecutor(world);
          this.mainThread = Thread.currentThread();
+@@ -560,7 +564,7 @@ public class ServerChunkCache extends ChunkSource implements ca.spottedleaf.moon
+             //gameprofilerfiller.pop(); // Purpur
+             //gameprofilerfiller.pop(); // Purpur
+         }
+-    
++
+         // Pufferfish start - optimize mob spawning
+         if (gg.pufferfish.pufferfish.PufferfishConfig.enableAsyncMobSpawning) {
+             for (ServerPlayer player : this.level.players) {
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index 2fe9d9b38c01d04416843fdd48d3e33899b7de63..5aae3c7692a6e4bc04b843878da063f6d2a5c7f2 100644
+index 067b10134b087626e05596225744b905211e8b63..fb3134f5a708a8d065774464106f5c897cc99386 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
-@@ -499,6 +499,14 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
+@@ -502,6 +502,14 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
  
      // Add env and gen to constructor, IWorldDataServer -> WorldDataServer
      public ServerLevel(MinecraftServer minecraftserver, Executor executor, LevelStorageSource.LevelStorageAccess convertable_conversionsession, PrimaryLevelData iworlddataserver, ResourceKey<Level> resourcekey, LevelStem worlddimension, ChunkProgressListener worldloadlistener, boolean flag, long i, List<CustomSpawner> list, boolean flag1, @Nullable RandomSequences randomsequences, org.bukkit.World.Environment env, org.bukkit.generator.ChunkGenerator gen, org.bukkit.generator.BiomeProvider biomeProvider) {
@@ -2210,7 +2228,7 @@ index 2fe9d9b38c01d04416843fdd48d3e33899b7de63..5aae3c7692a6e4bc04b843878da063f6
          // IRegistryCustom.Dimension iregistrycustom_dimension = minecraftserver.registryAccess(); // CraftBukkit - decompile error
          // Holder holder = worlddimension.type(); // CraftBukkit - decompile error
  
-@@ -538,6 +546,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
+@@ -558,6 +566,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
              chunkgenerator = new org.bukkit.craftbukkit.generator.CustomChunkGenerator(this, chunkgenerator, gen);
          }
          // CraftBukkit end
@@ -2223,7 +2241,7 @@ index 2fe9d9b38c01d04416843fdd48d3e33899b7de63..5aae3c7692a6e4bc04b843878da063f6
          boolean flag2 = minecraftserver.forceSynchronousWrites();
          DataFixer datafixer = minecraftserver.getFixerUpper();
          EntityPersistentStorage<Entity> entitypersistentstorage = new EntityStorage(new SimpleRegionStorage(new RegionStorageInfo(convertable_conversionsession.getLevelId(), resourcekey, "entities"), convertable_conversionsession.getDimensionPath(resourcekey).resolve("entities"), datafixer, flag2, DataFixTypes.ENTITY_CHUNK), this, minecraftserver);
-@@ -548,7 +562,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
+@@ -568,7 +582,7 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
          int k = this.spigotConfig.simulationDistance; // Spigot
          // Paper - rewrite chunk system
  
@@ -2232,7 +2250,7 @@ index 2fe9d9b38c01d04416843fdd48d3e33899b7de63..5aae3c7692a6e4bc04b843878da063f6
              return minecraftserver.overworld().getDataStorage();
          });
          this.chunkSource.getGeneratorState().ensureStructuresGenerated();
-@@ -606,6 +620,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
+@@ -627,6 +641,12 @@ public class ServerLevel extends Level implements WorldGenLevel, ca.spottedleaf.
          this.dragonFight = enderDragonFight;
      }
  
@@ -2259,14 +2277,14 @@ index 13d3c877b006a4975e7370713e3919c661e7890f..de9bd38cd09de67028c3218c27afc81e
              for (int i = 0; i < storage.getSize(); i++) {
                  T object = palette.valueFor(storage.get(i));
 diff --git a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
-index 774556a62eb240da42e84db4502e2ed43495be17..29e29fb2228f08dff3edd8bf651220b83b16ed7b 100644
+index 99597258e8e88cd9e2c901c4ac3ff7faeeabee2b..29e29fb2228f08dff3edd8bf651220b83b16ed7b 100644
 --- a/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 +++ b/src/main/java/org/bukkit/craftbukkit/util/Versioning.java
 @@ -11,7 +11,7 @@ public final class Versioning {
      public static String getBukkitVersion() {
          String result = "Unknown-Version";
  
--        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/io.papermc.paper/paper-api/pom.properties");
+-        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/org.purpurmc.purpur/purpur-api/pom.properties"); // Pufferfish // Purpur
 +        InputStream stream = Bukkit.class.getClassLoader().getResourceAsStream("META-INF/maven/com.infernalsuite.aswm/slimeworldmanager-api/pom.properties"); // ASWM
          Properties properties = new Properties();
  

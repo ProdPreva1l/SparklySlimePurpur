@@ -5,14 +5,14 @@ Subject: [PATCH] Compile fixes
 
 
 diff --git a/build.gradle.kts b/build.gradle.kts
-index f947b82537e5858dd0020a7a6fff48c54f3b49a3..316d03791a97af50f882c0271cbacf3d2a7af5b3 100644
+index f7b0a09a467b8192a618e5f3c77716eb7b19c803..87700d43e4fd30ef6d635fa1ed531b81e22fe37c 100644
 --- a/build.gradle.kts
 +++ b/build.gradle.kts
 @@ -17,9 +17,6 @@ dependencies {
      // ASWM start
      implementation(project(":slimeworldmanager-api"))
      implementation(project(":core"))
--    implementation("io.papermc.paper:paper-mojangapi:1.20.4-R0.1-SNAPSHOT") {
+-    implementation("io.papermc.paper:paper-mojangapi:1.21.1-R0.1-SNAPSHOT") {
 -        exclude("io.papermc.paper", "paper-api")
 -    }
      // ASWM end
