@@ -715,7 +715,7 @@ index d7a1776707d4b902f231918e22a813c7875c6bf4..672ac7d46eb9a87f1d107eadb59b11fe
                              // Paper end - rewrite chunk system
                          }
 diff --git a/src/main/java/net/minecraft/server/level/ServerLevel.java b/src/main/java/net/minecraft/server/level/ServerLevel.java
-index fb3134f5a708a8d065774464106f5c897cc99386..8841942a657fff1ae49951932010c90a7127e643 100644
+index fb3134f5a708a8d065774464106f5c897cc99386..2e9bf39cb6e03de4e48185b072c6c82a91a6ff09 100644
 --- a/src/main/java/net/minecraft/server/level/ServerLevel.java
 +++ b/src/main/java/net/minecraft/server/level/ServerLevel.java
 @@ -1,5 +1,6 @@
@@ -768,7 +768,7 @@ index fb3134f5a708a8d065774464106f5c897cc99386..8841942a657fff1ae49951932010c90a
          this.getCraftServer().addWorld(this.getWorld()); // CraftBukkit
          this.preciseTime = this.serverLevelData.getDayTime(); // Purpur
 +        this.tickExecutor = java.util.concurrent.Executors.newSingleThreadExecutor(runnable -> {
-+            TickThread tickThread = new TickThread.ServerLevelTickThread(runnable, "serverlevel-tick-worker [$worldName]");
++            TickThread tickThread = new TickThread.ServerLevelTickThread(runnable, "serverlevel-tick-worker [$worldName]".replace("$worldName", this.getWorld().getName()));
 +            tickThread.setDaemon(false);
 +            tickThread.setPriority(5);
 +            return tickThread;
